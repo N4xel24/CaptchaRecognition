@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+.venv_shared/
+
+# VS Code
+.vscode/
+
+# Training outputs
+models/*.pth
+runs/*.json
+input/*.png
+input/*.jpg
+input/*.jpeg
+
+# .env
+.env
+.env.*

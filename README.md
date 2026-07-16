@@ -27,6 +27,8 @@ captcha_recognition/
 ├── input/
 ├── models/
 ├── runs/
+├── eval/
+│   └── accuracy.py
 ├── src/
 │   ├── codec.py
 │   ├── config.py

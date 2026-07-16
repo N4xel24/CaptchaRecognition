@@ -3,24 +3,17 @@ import src.config as config
 
 class ImageDataset(Dataset):
     def __init__(self, generator, transformer, encoder):
+        self.generator = generator
         self.transformer = transformer
         self.encoder = encoder
-        self.image_file_set = []
-        self.label_set = []
-
-        for _ in range(config.buffer_size):
-            image_file, label = generator()
-            self.image_file_set.append(image_file)
-            self.label_set.append(label)
 
     def __len__(self):
-        return config.buffer_size
+        return config.epoch_size
     
     def __getitem__(self, idx):
-        image_file = self.image_file_set[idx]
-        image = self.transformer(image_file)
+        image, label = self.generator()
 
-        label = self.label_set[idx]
-        encoded_label = self.encoder(label)
+        image = self.transformer(image)
+        label = self.encoder(label)
 
-        return image, encoded_label
+        return image, label

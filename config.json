@@ -4,11 +4,14 @@
     "font_sizes":       [30, 35, 40, 45, 50, 55, 60, 65, 70],
     "charset":          "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "captcha_length":   1,
-    "epoch_size":       500,
-    "buffer_size":      100,
-    "batch_size":       20,
+
+    "epochs":           30,
+    "epoch_size":       1000,
+    "batch_size":       32,
+    "num_workers":      4,
+    "prefetch_factor":  4,
+
     "learning_rate":    0.001,
-    "epochs":           20,
     "optimizer":        "Adam",
     "loss_function":    "CrossEntropyLoss"
 }

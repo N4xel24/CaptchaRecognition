@@ -67,14 +67,21 @@ Example:
 
 ```json
 {
-    "width": 160,
-    "height": 64,
-    "captcha_length": 3,
-    "epoch_size": 200000,
-    "buffer_size": 10000,
-    "batch_size": 128,
-    "learning_rate": 0.001,
-    "epochs": 30
+    "width":            160,
+    "height":           64,
+    "font_sizes":       [30, 35, 40, 45, 50, 55, 60, 65, 70],
+    "charset":          "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "captcha_length":   1,
+
+    "epochs":           30,
+    "epoch_size":       1000,
+    "batch_size":       32,
+    "num_workers":      4,
+    "prefetch_factor":  4,
+
+    "learning_rate":    0.001,
+    "optimizer":        "Adam",
+    "loss_function":    "CrossEntropyLoss"
 }
 ```
 
@@ -226,12 +233,6 @@ Linear
 This project does **not** store a fixed dataset for training.
 
 Instead, CAPTCHA images are generated **on the fly**.
-
-For each epoch,
-
-- multiple image buffers are generated,
-- each buffer is used for training,
-- then a new buffer is generated.
 
 This allows the model to continuously see new CAPTCHA samples during training.
 

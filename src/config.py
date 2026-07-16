@@ -11,13 +11,13 @@ with open(ROOT / "config.json", "r") as file:
     font_sizes       = config["font_sizes"]
     charset          = config["charset"]
     captcha_length   = config["captcha_length"]
-    epoch_size       = config["epoch_size"]
-    buffer_size      = config["buffer_size"]
-    batch_size       = config["batch_size"]
-    learning_rate    = config["learning_rate"]
+
     epochs           = config["epochs"]
+    epoch_size       = config["epoch_size"]
+    batch_size       = config["batch_size"]
+    num_workers      = config["num_workers"]
+    prefetch_factor  = config["prefetch_factor"]
+
+    learning_rate    = config["learning_rate"]
     nn_optimizer     = config["optimizer"]
     nn_loss_function = config["loss_function"]
-
-if epoch_size % buffer_size != 0:
-    raise ValueError("epoch_size must be divisible by buffer_size")

@@ -36,28 +36,32 @@ model.train()
 for epoch in range(config.epochs):
     epoch_start = time.time()
 
+    dataset = prov.create_dataset()
+    dataloader = DataLoader(
+        dataset,
+        batch_size=config.batch_size,
+        shuffle=True,
+        num_workers=config.num_workers,
+        pin_memory=(device.type == "cuda"),
+        persistent_workers=True,
+        prefetch_factor=config.prefetch_factor
+    )
+
     total_loss = 0
-    total_batches = 0
-    for _ in range(config.epoch_size//config.buffer_size):
-        dataset = prov.create_dataset()
-        dataloader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, pin_memory=(device.type == "cuda"))
-        # Generate multiple datasets for each epoch based on buffer size.
+    for images, labels in dataloader:
+        images = images.to(device)
+        labels = labels.to(device)
 
-        for images, labels in dataloader:
-            images = images.to(device)
-            labels = labels.to(device)
+        optimizer.zero_grad()
 
-            optimizer.zero_grad()
+        predictions = model(images).view(-1, len(config.charset))
+        loss = criterion(predictions, labels.view(-1))
+        loss.backward()
+        optimizer.step()
 
-            predictions = model(images).view(-1, len(config.charset))
-            loss = criterion(predictions, labels.view(-1))
-            loss.backward()
-            optimizer.step()
-
-            total_loss += loss.item()
-            total_batches += 1
+        total_loss += loss.item()
         
-    average_loss = total_loss/total_batches
+    average_loss = total_loss/len(dataloader)
 
     if average_loss < best_loss:
         best_loss = average_loss
@@ -65,16 +69,25 @@ for epoch in range(config.epochs):
         torch.save(model.state_dict(), MODELS / f"{run_ID}.pth")
         
     epoch_end = time.time()
-    epoch_time = prov.time_format(epoch_end - epoch_start)
-    print(f"[EPOCH: {epoch+1}/{config.epochs}] - Time = {epoch_time} - Loss = {average_loss:.9f}")
+    epoch_exact_time = epoch_end - epoch_start
+    epoch_time = prov.time_format(epoch_exact_time)
+
+    if epoch_exact_time<60:
+        print(f"[EPOCH: {epoch+1}/{config.epochs}] - Time = {epoch_exact_time:07.4f}s - Loss = {average_loss:.9f}")
+    else:
+        print(f"[EPOCH: {epoch+1}/{config.epochs}] - Time = {epoch_time} - Loss = {average_loss:.9f}")
 
 print("MODEL LEARNED SUCCESSFULLY!")
-print(f"[BEST EPOCH: {best_epoch}/{config.epochs}] Best loss = {best_loss:.9f}")
+print(f"[BEST EPOCH: {best_epoch}/{config.epochs}] BEST LOSS = {best_loss:.9f}")
 
 end_time = time.time()
 train_time = end_time - start_time
 formatted_train_time = prov.time_format(train_time)
-print(f"TRAINING TIME = {formatted_train_time}")
+
+if train_time<60:
+    print(f"TRAINING TIME = {train_time:07.4f}s")
+else:
+    print(f"TRAINING TIME = {formatted_train_time}")
 
 result = {
     "best_epoch": best_epoch,
